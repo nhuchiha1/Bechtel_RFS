@@ -52,13 +52,19 @@
         button {
             background-color: #007bff;
             color: white;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
             margin: 8px 5px;
             transition: all 0.3s;
+            min-width: 140px;
+            height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         button:hover {
             background-color: #0056b3;
@@ -121,6 +127,109 @@
             display: block;
             margin: 0 auto;
         }
+        .response-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .response-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .response-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .response-data {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .meeting-link {
+            background-color: #e7f3ff;
+            border: 2px solid #007bff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .meeting-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            word-break: break-all;
+        }
+        .meeting-link a:hover {
+            text-decoration: underline;
+        }
+        .launch-meeting-btn {
+            background-color: #28a745 !important;
+            color: white !important;
+            padding: 15px 25px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            border: none !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            margin: 8px 5px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+            min-width: 140px !important;
+            height: 50px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .launch-meeting-btn:hover {
+            background-color: #218838 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+        }
+        .copy-link-btn {
+            background-color: #007bff !important;
+            color: white !important;
+            padding: 15px 25px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            border: none !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            margin: 8px 5px !important;
+            transition: all 0.3s ease !important;
+            min-width: 140px !important;
+            height: 50px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .copy-link-btn:hover {
+            background-color: #0056b3 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -129,17 +238,33 @@
         
         <!-- Current URL Parameters Section -->
         <div class="section current-params">
-            <h3>📥 Current URL Parameters</h3>
             <div id="currentParams"></div>
         </div>
         
         <!-- Generated URL Section -->
         <div class="section">
-            <button onclick="navigateToNewUrl()" class="action-button">🚀 Create Meeting</button>
-            <button onclick="copyUrlToClipboard()">📋 Copy URL</button>
-            <button onclick="toggleUrlDisplay()" style="background-color: #6c757d; margin-top: 10px;">🔽 Show URL Details</button>
-            <div id="generatedUrlDisplay" style="display: none; margin-top: 15px;"></div>
-            <div id="qrCodeDisplay" style="text-align: center; margin: 20px 0;"></div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button onclick="navigateToNewUrl()" class="action-button">🚀 Create Meeting</button>
+                <button onclick="copyUrlToClipboard()">� Copy URL</button>
+                <div id="qrCodeDisplay" style="text-align: center;"></div>
+            </div>
+        </div>
+
+        <!-- Power Automate Response Section -->
+        <div class="section" id="responseSection" style="display: none;">
+            <h3>📋 Power Automate Flow Response</h3>
+            
+            <!-- Launch Meeting Buttons Container -->
+            <div id="meetingButtonsContainer" style="display: none; text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 8px; margin: 15px 0; border: 2px solid #28a745;">
+                <h4 style="margin: 0 0 15px 0; color: #28a745;">🚀 Meeting Ready!</h4>
+                <p style="margin: 10px 0; color: #666; font-size: 14px;">Your meeting has been created successfully!</p>
+                <div id="meetingButtons"></div>
+            </div>
+            
+            <div id="loadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                <div style="display: inline-block; animation: spin 1s linear infinite; font-size: 24px;">⏳</div>
+                <p>Processing your request...</p>
+            </div>
         </div>
     </div>
 
@@ -170,14 +295,67 @@
                 return;
             }
             
-            let html = '';
+            // Define parameter organization
+            const leftColumnParams = ['JobNumber', 'Discipline', 'LO'];
+            const rightColumnParams = ['DocumentApp', 'DocumentType', 'DocumentNumber'];
+            
+            let leftColumnHtml = '';
+            let rightColumnHtml = '';
+            
+            // Build left column
+            leftColumnParams.forEach(paramKey => {
+                if (params[paramKey]) {
+                    leftColumnHtml += `
+                        <div class="param-item">
+                            <span class="param-name">${paramKey}:</span>
+                            <span class="param-value">${params[paramKey]}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Build right column
+            rightColumnParams.forEach(paramKey => {
+                if (params[paramKey]) {
+                    rightColumnHtml += `
+                        <div class="param-item">
+                            <span class="param-name">${paramKey}:</span>
+                            <span class="param-value">${params[paramKey]}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Handle any additional parameters not in the defined lists
+            const definedParams = [...leftColumnParams, ...rightColumnParams];
+            let additionalHtml = '';
             for (const [key, value] of Object.entries(params)) {
-                html += `
-                    <div class="param-item">
-                        <span class="param-name">${key}:</span>
-                        <span class="param-value">${value}</span>
-                    </div>
-                `;
+                if (!definedParams.includes(key)) {
+                    additionalHtml += `
+                        <div class="param-item">
+                            <span class="param-name">${key}:</span>
+                            <span class="param-value">${value}</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Create two-column layout
+            let html = '<div style="display: flex; gap: 20px; flex-wrap: wrap;">';
+            
+            if (leftColumnHtml) {
+                html += `<div style="flex: 1; min-width: 200px;">${leftColumnHtml}</div>`;
+            }
+            
+            if (rightColumnHtml) {
+                html += `<div style="flex: 1; min-width: 200px;">${rightColumnHtml}</div>`;
+            }
+            
+            html += '</div>';
+            
+            // Add any additional parameters below the columns
+            if (additionalHtml) {
+                html += `<div style="margin-top: 15px;"><strong>Additional Parameters:</strong></div>${additionalHtml}`;
             }
             
             container.innerHTML = html;
@@ -191,35 +369,13 @@
             const baseUrl = "https://prod-93.westus.logic.azure.com:443/workflows/66498f28f8974a2f82a605792ede6f45/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0b_P8FOodLdQA5o0G3Aq17k3C-0KwyM5LRbkPi7t_K0&";
             
             if (Object.keys(params).length === 0) {
-                // Even with no parameters, show the base URL
+                // Even with no parameters, set the base URL
                 generatedUrl = baseUrl.slice(0, -1); // Remove trailing &
-                document.getElementById('generatedUrlDisplay').innerHTML = `
-                    <div class="generated-url">
-                        <strong>Generated URL:</strong><br>
-                        <div class="url-display">${generatedUrl}</div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <strong>No additional parameters found</strong>
-                    </div>
-                `;
-                
-                // Generate and display QR code
-                generateQRCode(generatedUrl);
-                return;
+            } else {
+                // Create new URL with parameters
+                const searchParams = new URLSearchParams(params);
+                generatedUrl = baseUrl + searchParams.toString();
             }
-            
-            // Create new URL with parameters
-            const searchParams = new URLSearchParams(params);
-            generatedUrl = baseUrl + searchParams.toString();
-            
-            // Display the generated URL
-            const displayContainer = document.getElementById('generatedUrlDisplay');
-            displayContainer.innerHTML = `
-                <div class="generated-url">
-                    <strong>Generated URL:</strong><br>
-                    <div class="url-display">${generatedUrl}</div>
-                </div>
-            `;
             
             // Generate and display QR code
             generateQRCode(generatedUrl);
@@ -237,43 +393,115 @@
                 return;
             }
             
-            // Use QR Server API to generate QR code
-            const qrSize = 200;
+            // Use QR Server API to generate QR code - compact size for inline display
+            const qrSize = 80;
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(url)}`;
             
             qrContainer.innerHTML = `
-                <div class="qr-code">
-                    <h4 style="margin-top: 0; color: #007bff;">📱 QR Code</h4>
-                    <img src="${qrUrl}" alt="QR Code for generated URL" style="max-width: ${qrSize}px; height: auto;" />
-                    <p style="margin-bottom: 0; font-size: 12px; color: #666;">Scan with your mobile device</p>
+                <div style="background-color: white; padding: 8px; border-radius: 6px; border: 2px solid #007bff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 3px;">
+                        <span style="color: #007bff; font-size: 10px; font-weight: bold;">📱 Scan URL</span>
+                    </div>
+                    <img src="${qrUrl}" alt="QR Code for Power Automate URL" style="width: ${qrSize}px; height: ${qrSize}px; display: block;" />
                 </div>
             `;
             
             console.log('QR Code generated for URL:', url);
         }
         
-        // Toggle URL display visibility
-        function toggleUrlDisplay() {
-            const urlDisplay = document.getElementById('generatedUrlDisplay');
-            const toggleButton = event.target;
-            
-            if (urlDisplay.style.display === 'none') {
-                urlDisplay.style.display = 'block';
-                toggleButton.innerHTML = '🔼 Hide URL Details';
-            } else {
-                urlDisplay.style.display = 'none';
-                toggleButton.innerHTML = '🔽 Show URL Details';
-            }
-        }
+
         
         // Navigate to the new URL
-        function navigateToNewUrl() {
+        async function navigateToNewUrl() {
             if (!generatedUrl) {
                 alert('Please generate a URL first');
                 return;
             }
             
-            window.location.href = generatedUrl;
+            // Show response section and loading indicator
+            document.getElementById('responseSection').style.display = 'block';
+            document.getElementById('loadingIndicator').style.display = 'block';
+            
+            try {
+                // Prepare the request body with current parameters
+                const params = extractCurrentParams();
+                const requestBody = {
+                    ...params,
+                    timestamp: new Date().toISOString(),
+                    source: 'RFS_HTML_Interface'
+                };
+                
+                console.log('Sending request to Power Automate:', generatedUrl);
+                console.log('Request body:', requestBody);
+                
+                // Make the request to Power Automate flow
+                const response = await fetch(generatedUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                
+                if (response.ok) {
+                    // Check if response has content before trying to parse JSON
+                    const responseText = await response.text();
+                    
+                    if (!responseText || responseText.trim() === '') {
+                        // Empty response - treat as success but no data
+                        displaySuccessResponse({
+                            message: 'Power Automate flow executed successfully',
+                            status: response.status,
+                            statusText: response.statusText,
+                            note: 'No response data returned from the flow'
+                        });
+                    } else {
+                        try {
+                            // Try to parse as JSON
+                            const responseData = JSON.parse(responseText);
+                            displaySuccessResponse(responseData);
+                        } catch (jsonError) {
+                            // Not valid JSON - display as text response
+                            displaySuccessResponse({
+                                message: 'Power Automate flow completed',
+                                status: response.status,
+                                statusText: response.statusText,
+                                rawResponse: responseText,
+                                note: 'Response was not in JSON format'
+                            });
+                        }
+                    }
+                } else {
+                    const errorText = await response.text();
+                    displayErrorResponse(`HTTP ${response.status}: ${response.statusText}`, errorText);
+                }
+                
+            } catch (error) {
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                console.error('Error calling Power Automate flow:', error);
+                
+                let errorTitle = 'Network Error';
+                let errorMessage = error.message;
+                
+                // Provide more specific error messages
+                if (error.message.includes('Failed to fetch')) {
+                    errorTitle = 'Connection Error';
+                    errorMessage = 'Unable to connect to Power Automate flow. Please check your internet connection and the flow URL.';
+                } else if (error.message.includes('JSON')) {
+                    errorTitle = 'Response Format Error';  
+                    errorMessage = 'The Power Automate flow returned an invalid or empty response.';
+                } else if (error.message.includes('CORS')) {
+                    errorTitle = 'CORS Error';
+                    errorMessage = 'Cross-origin request blocked. The Power Automate flow may need to be configured to allow requests from this domain.';
+                }
+                
+                displayErrorResponse(errorTitle, errorMessage + '\n\nOriginal error: ' + error.message);
+            }
         }
         
         // Copy URL to clipboard
@@ -296,6 +524,125 @@
                 document.body.removeChild(textArea);
                 alert('URL copied to clipboard!');
             });
+        }
+        
+        // Display successful Power Automate response
+        function displaySuccessResponse(responseData) {
+            const meetingButtonsContainer = document.getElementById('meetingButtonsContainer');
+            const meetingButtons = document.getElementById('meetingButtons');
+            
+            // Reset meeting buttons
+            meetingButtonsContainer.style.display = 'none';
+            meetingButtons.innerHTML = '';
+            
+            // Handle case where responseData might be null or undefined
+            if (!responseData || typeof responseData !== 'object') {
+                return;
+            }
+            
+            // Look for meeting URLs in various possible fields
+            const possibleUrlFields = [
+                'joinUrl', 'meetingUrl', 'webUrl', 'onlineMeetingUrl', 
+                'joinWebUrl', 'meetingLink', 'teamsUrl', 'url'
+            ];
+            
+            let meetingUrl = null;
+            for (const field of possibleUrlFields) {
+                if (responseData[field] && typeof responseData[field] === 'string') {
+                    meetingUrl = responseData[field];
+                    break;
+                }
+            }
+            
+            // If we found a meeting URL, display it prominently in the buttons container
+            if (meetingUrl) {
+                meetingButtonsContainer.style.display = 'block';
+                meetingButtons.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <button onclick="openMeetingUrl('${meetingUrl}')" class="launch-meeting-btn">
+                            🎥 Launch Meeting
+                        </button>
+                        <button onclick="copyMeetingLink('${meetingUrl}')" class="copy-link-btn">
+                            📋 Copy Link
+                        </button>
+                        <div style="background-color: white; padding: 10px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; margin-bottom: 5px;">
+                                <span style="color: #007bff; font-size: 12px; font-weight: bold;">📱 Scan to Join</span>
+                            </div>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(meetingUrl)}" 
+                                 alt="QR Code for meeting" 
+                                 style="width: 80px; height: 80px; display: block;" />
+                        </div>
+                    </div>
+                `;
+                
+            }
+            
+            if (responseData.rawResponse) {
+                // Check if raw response contains a URL pattern
+                const urlPattern = /https?:\/\/[^\s<>"{}|\\^`[\]]+/gi;
+                const urls = responseData.rawResponse.match(urlPattern);
+                
+                if (urls && urls.length > 0) {
+                    // If URLs found, show buttons in the container at the top
+                    const meetingUrl = urls[0];
+                    meetingButtonsContainer.style.display = 'block';
+                    meetingButtons.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                            <button onclick="openMeetingUrl('${meetingUrl}')" class="launch-meeting-btn">
+                                🎥 Launch Meeting
+                            </button>
+                            <button onclick="copyMeetingLink('${meetingUrl}')" class="copy-link-btn">
+                                📋 Copy Link
+                            </button>
+                            <div style="background-color: white; padding: 10px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="text-align: center; margin-bottom: 5px;">
+                                    <span style="color: #007bff; font-size: 12px; font-weight: bold;">📱 Scan to Join</span>
+                                </div>
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(meetingUrl)}" 
+                                     alt="QR Code for meeting" 
+                                     style="width: 80px; height: 80px; display: block;" />
+                            </div>
+                        </div>
+                    `;
+                    
+                }
+            }
+            
+            console.log('Power Automate Success Response:', responseData);
+        }
+        
+        // Display error response
+        function displayErrorResponse(errorTitle, errorDetails) {
+            const meetingButtonsContainer = document.getElementById('meetingButtonsContainer');
+            
+            // Hide meeting buttons for errors
+            meetingButtonsContainer.style.display = 'none';
+            
+            console.error('Power Automate Error:', errorTitle, errorDetails);
+            alert(`❌ ${errorTitle}\n\nThe Power Automate flow encountered an error. Please check the console for details.`);
+        }
+        
+        // Copy meeting link to clipboard
+        function copyMeetingLink(meetingUrl) {
+            navigator.clipboard.writeText(meetingUrl).then(() => {
+                alert('Meeting link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy meeting link:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = meetingUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Meeting link copied to clipboard!');
+            });
+        }
+        
+        // Open meeting URL in new tab
+        function openMeetingUrl(meetingUrl) {
+            window.open(meetingUrl, '_blank');
         }
         
         // Refresh current parameters

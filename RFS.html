@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Meeting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .current-params {
+            background-color: #e7f3ff;
+        }
+        .param-item {
+            margin: 8px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .param-name {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .param-value {
+            color: #333;
+            margin-left: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 8px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        .action-button {
+            background-color: #28a745;
+        }
+        .action-button:hover {
+            background-color: #218838;
+        }
+        .clear-button {
+            background-color: #dc3545;
+        }
+        .clear-button:hover {
+            background-color: #c82333;
+        }
+        .generated-url {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ffeaa7;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        .url-display {
+            font-family: monospace;
+            font-size: 14px;
+            color: #856404;
+        }
+        .example {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #6c757d;
+        }
+        .example-link {
+            color: #007bff;
+            text-decoration: none;
+            font-family: monospace;
+        }
+        .example-link:hover {
+            text-decoration: underline;
+        }
+        .no-params {
+            color: #666;
+            font-style: italic;
+        }
+        .qr-code {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: white;
+            display: inline-block;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .qr-code img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Meeting</h1>
+        
+        <!-- Current URL Parameters Section -->
+        <div class="section current-params">
+            <h3>📥 Current URL Parameters</h3>
+            <div id="currentParams"></div>
+        </div>
+        
+        <!-- Generated URL Section -->
+        <div class="section">
+            <button onclick="navigateToNewUrl()" class="action-button">🚀 Create Meeting</button>
+            <button onclick="copyUrlToClipboard()">📋 Copy URL</button>
+            <button onclick="toggleUrlDisplay()" style="background-color: #6c757d; margin-top: 10px;">🔽 Show URL Details</button>
+            <div id="generatedUrlDisplay" style="display: none; margin-top: 15px;"></div>
+            <div id="qrCodeDisplay" style="text-align: center; margin: 20px 0;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Store current parameters
+        let currentUrlParams = {};
+        let generatedUrl = '';
+        
+        // Extract parameters from current URL
+        function extractCurrentParams() {
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            currentUrlParams = {};
+            
+            for (const [key, value] of urlSearchParams.entries()) {
+                currentUrlParams[key] = value;
+            }
+            
+            return currentUrlParams;
+        }
+        
+        // Display current URL parameters
+        function displayCurrentParams() {
+            const params = extractCurrentParams();
+            const container = document.getElementById('currentParams');
+            
+            if (Object.keys(params).length === 0) {
+                container.innerHTML = '<div class="no-params">No parameters found in current URL</div>';
+                return;
+            }
+            
+            let html = '';
+            for (const [key, value] of Object.entries(params)) {
+                html += `
+                    <div class="param-item">
+                        <span class="param-name">${key}:</span>
+                        <span class="param-value">${value}</span>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // Generate new URL with current parameters only
+        function generateNewUrl() {
+            const params = extractCurrentParams();
+            
+            // Base Azure Logic App URL
+            const baseUrl = "https://prod-93.westus.logic.azure.com:443/workflows/66498f28f8974a2f82a605792ede6f45/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0b_P8FOodLdQA5o0G3Aq17k3C-0KwyM5LRbkPi7t_K0&";
+            
+            if (Object.keys(params).length === 0) {
+                // Even with no parameters, show the base URL
+                generatedUrl = baseUrl.slice(0, -1); // Remove trailing &
+                document.getElementById('generatedUrlDisplay').innerHTML = `
+                    <div class="generated-url">
+                        <strong>Generated URL:</strong><br>
+                        <div class="url-display">${generatedUrl}</div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>No additional parameters found</strong>
+                    </div>
+                `;
+                
+                // Generate and display QR code
+                generateQRCode(generatedUrl);
+                return;
+            }
+            
+            // Create new URL with parameters
+            const searchParams = new URLSearchParams(params);
+            generatedUrl = baseUrl + searchParams.toString();
+            
+            // Display the generated URL
+            const displayContainer = document.getElementById('generatedUrlDisplay');
+            displayContainer.innerHTML = `
+                <div class="generated-url">
+                    <strong>Generated URL:</strong><br>
+                    <div class="url-display">${generatedUrl}</div>
+                </div>
+            `;
+            
+            // Generate and display QR code
+            generateQRCode(generatedUrl);
+            
+            console.log('Generated URL:', generatedUrl);
+            console.log('Current parameters:', params);
+        }
+        
+        // Generate QR code for the URL
+        function generateQRCode(url) {
+            const qrContainer = document.getElementById('qrCodeDisplay');
+            
+            if (!url) {
+                qrContainer.innerHTML = '';
+                return;
+            }
+            
+            // Use QR Server API to generate QR code
+            const qrSize = 200;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(url)}`;
+            
+            qrContainer.innerHTML = `
+                <div class="qr-code">
+                    <h4 style="margin-top: 0; color: #007bff;">📱 QR Code</h4>
+                    <img src="${qrUrl}" alt="QR Code for generated URL" style="max-width: ${qrSize}px; height: auto;" />
+                    <p style="margin-bottom: 0; font-size: 12px; color: #666;">Scan with your mobile device</p>
+                </div>
+            `;
+            
+            console.log('QR Code generated for URL:', url);
+        }
+        
+        // Toggle URL display visibility
+        function toggleUrlDisplay() {
+            const urlDisplay = document.getElementById('generatedUrlDisplay');
+            const toggleButton = event.target;
+            
+            if (urlDisplay.style.display === 'none') {
+                urlDisplay.style.display = 'block';
+                toggleButton.innerHTML = '🔼 Hide URL Details';
+            } else {
+                urlDisplay.style.display = 'none';
+                toggleButton.innerHTML = '🔽 Show URL Details';
+            }
+        }
+        
+        // Navigate to the new URL
+        function navigateToNewUrl() {
+            if (!generatedUrl) {
+                alert('Please generate a URL first');
+                return;
+            }
+            
+            window.location.href = generatedUrl;
+        }
+        
+        // Copy URL to clipboard
+        function copyUrlToClipboard() {
+            if (!generatedUrl) {
+                alert('Please generate a URL first');
+                return;
+            }
+            
+            navigator.clipboard.writeText(generatedUrl).then(() => {
+                alert('URL copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy URL:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = generatedUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('URL copied to clipboard!');
+            });
+        }
+        
+        // Refresh current parameters
+        function refreshCurrentParams() {
+            displayCurrentParams();
+            generateNewUrl(); // Automatically generate URL when refreshing
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            displayCurrentParams();
+            generateNewUrl(); // Automatically generate URL on load
+            console.log('Page loaded. Current URL parameters:', currentUrlParams);
+        });
+        
+        // Update display when URL changes (for single-page applications)
+        window.addEventListener('popstate', function() {
+            displayCurrentParams();
+            generateNewUrl(); // Automatically generate URL on URL change
+        });
+    </script>
+</body>
+</html>

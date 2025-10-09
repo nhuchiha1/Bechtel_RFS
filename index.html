@@ -366,7 +366,8 @@
             const params = extractCurrentParams();
             
             // Base Azure Logic App URL
-            const baseUrl = "https://prod-93.westus.logic.azure.com:443/workflows/66498f28f8974a2f82a605792ede6f45/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0b_P8FOodLdQA5o0G3Aq17k3C-0KwyM5LRbkPi7t_K0&";
+            //const baseUrl = "https://prod-93.westus.logic.azure.com:443/workflows/66498f28f8974a2f82a605792ede6f45/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0b_P8FOodLdQA5o0G3Aq17k3C-0KwyM5LRbkPi7t_K0&";
+            const baseUrl = "https://247644b0a466e4d68a01a244f6cb5f.19.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3e350daeceed49b690c5bda3aaa4ca00/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fpX3RmQr9PaF5AEntKSWYNoZo37O0dOXFPrnpjp-bJ4&";
             
             if (Object.keys(params).length === 0) {
                 // Even with no parameters, set the base URL
@@ -666,3 +667,4 @@
     </script>
 </body>
 </html>
+

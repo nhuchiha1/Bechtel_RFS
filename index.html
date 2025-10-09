@@ -245,7 +245,8 @@
         <div class="section">
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <button onclick="navigateToNewUrl()" class="action-button">🚀 Create Meeting</button>
-                <button onclick="copyUrlToClipboard()">� Copy URL</button>
+                <button onclick="copyUrlToClipboard()">📋 Copy URL</button>
+                <button onclick="refreshPage()">🔄 Refresh</button>
                 <div id="qrCodeDisplay" style="text-align: center;"></div>
             </div>
         </div>
@@ -650,6 +651,11 @@
         function refreshCurrentParams() {
             displayCurrentParams();
             generateNewUrl(); // Automatically generate URL when refreshing
+        }
+        
+        // Refresh the entire page
+        function refreshPage() {
+            location.reload();
         }
         
         // Initialize when page loads

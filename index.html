@@ -260,7 +260,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Remote Expert</h1>
+        <h1 style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+            <img src="C:\Users\nha\Downloads\bechtel bug.png" alt="Bechtel Logo" style="height: 50px; width: auto;">
+            <span style="flex: 1; text-align: center;">Remote Expert</span>
+            <img src="C:\Users\nha\Downloads\RemoteServices.jpg" alt="Remote Services" style="height: 50px; width: auto;">
+        </h1>
         
         <!-- Current URL Parameters Section -->
         <div class="section current-params" style="display: none;">
@@ -418,12 +422,12 @@
                 return;
             }
             
-            // Use QR Server API to generate QR code - compact size for inline display
-            const qrSize = 80;
+            // Use QR Server API to generate QR code - larger size for better scanning
+            const qrSize = 150;
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(url)}`;
             
             qrContainer.innerHTML = `
-                <div style="background-color: white; padding: 8px; border-radius: 6px; border: 2px solid #007bff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div style="background-color: white; padding: 12px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
 
                     <img src="${qrUrl}" alt="QR Code for Power Automate URL" style="width: ${qrSize}px; height: ${qrSize}px; display: block;" />
                 </div>
@@ -794,13 +798,13 @@
                         <button onclick="openMeetingUrl('${meetingUrl}')" class="launch-meeting-btn">
                             🎥 Join Meeting
                         </button>
-                        <div style="background-color: white; padding: 10px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                            <div style="text-align: center; margin-bottom: 5px;">
+                        <div style="background-color: white; padding: 15px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; margin-bottom: 8px;">
                                 <span style="color: #007bff; font-size: 12px; font-weight: bold;">📱 Scan to Join</span>
                             </div>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(meetingUrl)}" 
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(meetingUrl)}" 
                                  alt="QR Code for meeting" 
-                                 style="width: 80px; height: 80px; display: block;" />
+                                 style="width: 150px; height: 150px; display: block;" />
                         </div>
                     </div>
                 `;
@@ -821,13 +825,13 @@
                             <button onclick="openMeetingUrl('${meetingUrl}')" class="launch-meeting-btn">
                                 🎥 Join Meeting
                             </button>
-                            <div style="background-color: white; padding: 10px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                <div style="text-align: center; margin-bottom: 5px;">
+                            <div style="background-color: white; padding: 15px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="text-align: center; margin-bottom: 8px;">
                                     <span style="color: #007bff; font-size: 12px; font-weight: bold;">📱 Scan to Join</span>
                                 </div>
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(meetingUrl)}" 
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(meetingUrl)}" 
                                      alt="QR Code for meeting" 
-                                     style="width: 80px; height: 80px; display: block;" />
+                                     style="width: 150px; height: 150px; display: block;" />
                             </div>
                         </div>
                     `;

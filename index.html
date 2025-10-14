@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Meeting</title>
+    <title>Remote Expert</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,11 +70,27 @@
             background-color: #0056b3;
             transform: translateY(-1px);
         }
+        button:disabled {
+            background-color: #6c757d !important;
+            color: #dee2e6 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        button:disabled:hover {
+            background-color: #6c757d !important;
+            transform: none !important;
+        }
         .action-button {
             background-color: #28a745;
         }
         .action-button:hover {
             background-color: #218838;
+        }
+        .action-button:disabled {
+            background-color: #6c757d !important;
+            color: #dee2e6 !important;
         }
         .clear-button {
             background-color: #dc3545;
@@ -234,27 +250,23 @@
 </head>
 <body>
     <div class="container">
-        <h1>Create Meeting</h1>
+        <h1>Remote Expert</h1>
         
         <!-- Current URL Parameters Section -->
-        <div class="section current-params">
+        <div class="section current-params" style="display: none;">
             <div id="currentParams"></div>
         </div>
         
         <!-- Generated URL Section -->
         <div class="section">
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <button onclick="navigateToNewUrl()" class="action-button">🚀 Create Meeting</button>
-                <button onclick="copyUrlToClipboard()">📋 Copy URL</button>
-                <button onclick="refreshPage()">🔄 Refresh</button>
-                <div id="qrCodeDisplay" style="text-align: center;"></div>
+                <button onclick="navigateToNewUrl()" class="action-button">🚀 Meet Now</button>
+                <button onclick="closeBrowser()">❌ Close</button>
             </div>
         </div>
 
         <!-- Power Automate Response Section -->
         <div class="section" id="responseSection" style="display: none;">
-            <h3>📋 Power Automate Flow Response</h3>
-            
             <!-- Launch Meeting Buttons Container -->
             <div id="meetingButtonsContainer" style="display: none; text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 8px; margin: 15px 0; border: 2px solid #28a745;">
                 <h4 style="margin: 0 0 15px 0; color: #28a745;">🚀 Meeting Ready!</h4>
@@ -401,9 +413,7 @@
             
             qrContainer.innerHTML = `
                 <div style="background-color: white; padding: 8px; border-radius: 6px; border: 2px solid #007bff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <div style="text-align: center; margin-bottom: 3px;">
-                        <span style="color: #007bff; font-size: 10px; font-weight: bold;">📱 Scan URL</span>
-                    </div>
+
                     <img src="${qrUrl}" alt="QR Code for Power Automate URL" style="width: ${qrSize}px; height: ${qrSize}px; display: block;" />
                 </div>
             `;
@@ -415,8 +425,19 @@
         
         // Navigate to the new URL
         async function navigateToNewUrl() {
+            // Disable the Meet Now button to prevent multiple clicks
+            const meetNowButton = event.target;
+            const originalText = meetNowButton.innerHTML;
+            meetNowButton.disabled = true;
+            meetNowButton.style.cursor = 'not-allowed';
+            meetNowButton.innerHTML = '⏳ Creating Meeting...';
+            
             if (!generatedUrl) {
                 alert('Please generate a URL first');
+                // Re-enable button on error
+                meetNowButton.disabled = false;
+                meetNowButton.style.cursor = 'pointer';
+                meetNowButton.innerHTML = originalText;
                 return;
             }
             
@@ -479,12 +500,19 @@
                     }
                 } else {
                     const errorText = await response.text();
+                    // Re-enable button on HTTP error
+                    meetNowButton.disabled = false;
+                    meetNowButton.style.cursor = 'pointer';
+                    meetNowButton.innerHTML = originalText;
                     displayErrorResponse(`HTTP ${response.status}: ${response.statusText}`, errorText);
                 }
                 
             } catch (error) {
-                // Hide loading indicator
+                // Hide loading indicator and re-enable button on error
                 document.getElementById('loadingIndicator').style.display = 'none';
+                meetNowButton.disabled = false;
+                meetNowButton.style.cursor = 'pointer';
+                meetNowButton.innerHTML = originalText;
                 console.error('Error calling Power Automate flow:', error);
                 
                 let errorTitle = 'Network Error';
@@ -562,10 +590,7 @@
                 meetingButtons.innerHTML = `
                     <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         <button onclick="openMeetingUrl('${meetingUrl}')" class="launch-meeting-btn">
-                            🎥 Launch Meeting
-                        </button>
-                        <button onclick="copyMeetingLink('${meetingUrl}')" class="copy-link-btn">
-                            📋 Copy Link
+                            🎥 Join Meeting
                         </button>
                         <div style="background-color: white; padding: 10px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                             <div style="text-align: center; margin-bottom: 5px;">
@@ -592,10 +617,7 @@
                     meetingButtons.innerHTML = `
                         <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
                             <button onclick="openMeetingUrl('${meetingUrl}')" class="launch-meeting-btn">
-                                🎥 Launch Meeting
-                            </button>
-                            <button onclick="copyMeetingLink('${meetingUrl}')" class="copy-link-btn">
-                                📋 Copy Link
+                                🎥 Join Meeting
                             </button>
                             <div style="background-color: white; padding: 10px; border-radius: 8px; border: 2px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                 <div style="text-align: center; margin-bottom: 5px;">
@@ -653,9 +675,31 @@
             generateNewUrl(); // Automatically generate URL when refreshing
         }
         
-        // Refresh the entire page
-        function refreshPage() {
-            location.reload();
+        // Close the browser window
+        function closeBrowser() {
+            // Try multiple approaches to close the window
+            
+            // Method 1: Try to close normally (works if window was opened by script)
+            try {
+                window.close();
+                
+                // Check if window is still open after a short delay
+                setTimeout(() => {
+                    if (!window.closed) {
+                        // Method 2: Try using history.back() to navigate away
+                        if (window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            // Method 3: Navigate to a blank page
+                            window.location.href = 'about:blank';
+                        }
+                    }
+                }, 50);
+                
+            } catch (error) {
+                // Method 4: Fallback - navigate to blank page immediately
+                window.location.href = 'about:blank';
+            }
         }
         
         // Initialize when page loads

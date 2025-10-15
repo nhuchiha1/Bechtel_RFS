@@ -102,6 +102,42 @@
             background-color: #6c757d !important;
             color: #dee2e6 !important;
         }
+        .call-now-icon-button {
+            background-color: #6f42c1;
+            color: #28a745;
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .call-now-icon-button:hover {
+            background-color: #5a36a1;
+        }
+        .call-now-icon-button:disabled {
+            background-color: #6c757d !important;
+            color: #dee2e6 !important;
+        }
+        .close-icon-button {
+            background-color: #dc3545;
+            color: white;
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-icon-button:hover {
+            background-color: #c82333;
+        }
         .clear-button {
             background-color: #dc3545;
         }
@@ -273,10 +309,17 @@
         
         <!-- Generated URL Section -->
         <div class="section">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <button onclick="navigateToNewUrl()" class="action-button">🚀 Meet Now</button>
-                <button onclick="callNowFlow()" class="call-now-button">📞 Call Now</button>
-                <button onclick="closeBrowser()">❌ Close</button>
+            <div style="display: flex; align-items: flex-start; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button onclick="navigateToNewUrl()" class="action-button">🎥 Meet Now</button>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                    <button id="callNowButton" onclick="callNowFlow()" class="call-now-icon-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#28a745">
+                            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                        </svg>
+                    </button>
+                    <div id="callStatus" style="font-size: 12px; color: #666; min-height: 16px; text-align: center;"></div>
+                </div>
+                <button onclick="closeBrowser()" class="close-icon-button">✕</button>
             </div>
         </div>
 
@@ -445,7 +488,7 @@
             const originalText = meetNowButton.innerHTML;
             meetNowButton.disabled = true;
             meetNowButton.style.cursor = 'not-allowed';
-            meetNowButton.innerHTML = '⏳ Creating Meeting...';
+            meetNowButton.innerHTML = '⏳ Join Meeting with button below...';
             
             if (!generatedUrl) {
                 alert('Please generate a URL first');
@@ -552,11 +595,11 @@
         // Call Now Flow - launches different Power Automate flow
         async function callNowFlow() {
             // Disable the Call Now button to prevent multiple clicks
-            const callNowButton = event.target;
-            const originalText = callNowButton.innerHTML;
+            const callNowButton = document.getElementById('callNowButton');
             callNowButton.disabled = true;
             callNowButton.style.cursor = 'not-allowed';
-            callNowButton.innerHTML = '⏳ Calling...';
+            document.getElementById('callStatus').innerHTML = 'Calling...';
+            document.getElementById('callStatus').style.color = '#007bff';
             
             try {
                 // Get current parameters
@@ -624,20 +667,30 @@
                         
                         // Show different message based on URL type
                         if (launchUrl.includes('teams.microsoft.com')) {
-                            callNowButton.innerHTML = '📞 Opening Teams Call...';
+                            document.getElementById('callStatus').innerHTML = 'Opening Teams Call...';
+                            document.getElementById('callStatus').style.color = '#007bff';
                         } else {
-                            callNowButton.innerHTML = '📞 Opening Call...';
+                            document.getElementById('callStatus').innerHTML = 'Opening Call...';
+                            document.getElementById('callStatus').style.color = '#007bff';
                         }
                         
                         // Auto-launch the URL (Teams call, phone dialer, etc.)
                         setTimeout(() => {
                             window.open(launchUrl, '_blank');
-                            // Update button after launch
-                            callNowButton.innerHTML = '✅ Call Launched';
+                            // Reset button to original icon and show status below
+                            callNowButton.innerHTML = '📞';
+                            callNowButton.disabled = false;
+                            callNowButton.style.cursor = 'pointer';
+                            document.getElementById('callStatus').innerHTML = 'Call Launched';
+                            document.getElementById('callStatus').style.color = '#28a745';
                         }, 500);
                     } else {
                         // No URL found but call was successful
-                        callNowButton.innerHTML = '✅ Call Started';
+                        callNowButton.innerHTML = '📞';
+                        callNowButton.disabled = false;
+                        callNowButton.style.cursor = 'pointer';
+                        document.getElementById('callStatus').innerHTML = 'Call Started';
+                        document.getElementById('callStatus').style.color = '#28a745';
                         console.warn('Call Now successful but no URL found in response');
                         console.log('Expected CallURL property not found in response');
                     }
@@ -652,7 +705,9 @@
                     // Re-enable button on error
                     callNowButton.disabled = false;
                     callNowButton.style.cursor = 'pointer';
-                    callNowButton.innerHTML = originalText;
+                    callNowButton.innerHTML = '📞';
+                    document.getElementById('callStatus').innerHTML = 'Call Failed';
+                    document.getElementById('callStatus').style.color = '#dc3545';
                     
                     alert(`Call failed: ${response.status} - ${response.statusText}`);
                 }
@@ -663,7 +718,9 @@
                 // Re-enable button on error
                 callNowButton.disabled = false;
                 callNowButton.style.cursor = 'pointer';
-                callNowButton.innerHTML = originalText;
+                callNowButton.innerHTML = '📞';
+                document.getElementById('callStatus').innerHTML = 'Call Failed';
+                document.getElementById('callStatus').style.color = '#dc3545';
                 
                 alert(`Call failed: ${error.message}`);
             }
@@ -923,4 +980,3 @@
     </script>
 </body>
 </html>
-
